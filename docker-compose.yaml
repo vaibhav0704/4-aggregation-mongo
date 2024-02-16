@@ -1,0 +1,35 @@
+version: '3.1'
+services:
+  api:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./.env
+    volumes:
+      - ./:/app
+      - ./node_modules:/app/node_modules
+    restart: unless-stopped
+    # command: "./src/bash/wait-for-it.sh db:27017 -- npm run dev"
+    networks:
+      - rest-server
+  
+  db:
+    image: mongo
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=test  
+      - MONGO_INITDB_ROOT_PASSWORD=test
+    volumes:
+      - db:/data/db
+    networks:
+      - rest-server
+
+volumes:
+  db:
+
+networks:
+  rest-server:
+    driver: bridge
